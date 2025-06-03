@@ -1,7 +1,7 @@
 import Home from "./Components/landing_page/Home";
 
 import Footer from "./Components/landing_page/Footer";
-import './app.css'
+import './App.css'
 
 
 function App() {
