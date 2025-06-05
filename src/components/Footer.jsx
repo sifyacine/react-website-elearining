@@ -1,5 +1,5 @@
 import React from "react";
-import Logo from "../../assets/pedaconnect_logo.png";
+import Logo from "../assets/pedaconnect_logo.png";
 import { BsTwitter } from "react-icons/bs";
 import { SiLinkedin } from "react-icons/si";
 import { BsYoutube } from "react-icons/bs";
