@@ -1,5 +1,5 @@
 import React from "react";
-import Navbar from "./Navbar";
+import Navbar from "../components/Navbar";
 import { FiArrowRight, FiUsers, FiAward, FiBookOpen } from "react-icons/fi";
 
 const Home = () => {

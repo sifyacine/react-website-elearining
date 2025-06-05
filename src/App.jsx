@@ -1,15 +1,23 @@
-import Home from "./Components/landing_page/Home";
-
-import Footer from "./Components/landing_page/Footer";
 import './App.css'
+import Footer from "./components/Footer";
+import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
 
 
 function App() {
   return (
-    <div className="App">
-      <Home />
-      <Footer />
-    </div>
+<Router>
+
+  <Navbar/>
+
+  <Routes>
+    <Route path="/" element={<Home/>}/>
+
+  </Routes>
+
+  <Footer/>
+
+</Router>
   );
 }
 
