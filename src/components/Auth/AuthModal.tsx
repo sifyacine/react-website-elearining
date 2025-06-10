@@ -43,7 +43,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const [schools, setSchools] = useState<School[]>([]);
   const [selectedWilaya, setSelectedWilaya] = useState('');
   const [selectedCommune, setSelectedCommune] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string>('');
 
   const [formData, setFormData] = useState({
     username: '',
@@ -61,14 +61,13 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
   });
 
   useEffect(() => {
-    // Load wilayas and communes
-    fetch('/assets/states_and_communes.json')
-      .then((response) => {
-        if (!response.ok) throw new Error('Failed to load wilayas');
-        return response.json();
-      })
-      .then((data: { wilaya_name: string; commune_name: string }[]) => {
-        const wilayaMap = data.reduce((acc: { [key: string]: string[] }, item) => {
+    const loadData = async () => {
+      try {
+        // Load wilayas and communes
+        const wilayaResponse = await fetch('/assets/states_and_communes.json');
+        if (!wilayaResponse.ok) throw new Error('Failed to load wilayas');
+        const wilayaData: { wilaya_name: string; commune_name: string }[] = await wilayaResponse.json();
+        const wilayaMap = wilayaData.reduce((acc: { [key: string]: string[] }, item) => {
           const { wilaya_name, commune_name } = item;
           if (!acc[wilaya_name]) acc[wilaya_name] = [];
           if (!acc[wilaya_name].includes(commune_name)) acc[wilaya_name].push(commune_name);
@@ -78,25 +77,21 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
           .map((name) => ({ name, communes: wilayaMap[name].sort() }))
           .sort((a, b) => a.name.localeCompare(b.name));
         setWilayas(wilayaArray);
-      })
-      .catch((err) => {
-        console.error('Error loading wilayas:', err);
-        setError(getTranslation('dataLoadError', language));
-      });
 
-    // Load schools
-    fetch('/assets/mock_data.json')
-      .then((response) => {
-        if (!response.ok) throw new Error('Failed to load schools');
-        return response.json();
-      })
-      .then((data: { schools: School[] }) => {
-        setSchools(data.schools.sort((a, b) => a.name.localeCompare(b.name)));
-      })
-      .catch((err) => {
-        console.error('Error loading schools:', err);
+        // Load schools
+        const schoolResponse = await fetch('/assets/mock_data.json');
+        if (!schoolResponse.ok) throw new Error('Failed to load schools');
+        const schoolData: { schools: School[] } = await schoolResponse.json();
+        setSchools(schoolData.schools.sort((a, b) => a.name.localeCompare(b.name)));
+      } catch (err) {
+        console.error('Error loading data:', err);
         setError(getTranslation('dataLoadError', language));
-      });
+        setWilayas([]);
+        setSchools([]);
+      }
+    };
+
+    loadData();
   }, [language]);
 
   const grades = useMemo(
@@ -127,7 +122,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    setError(null);
+    setError('');
   };
 
   const handleChildChange = (index: number, field: string, value: string) => {
@@ -138,13 +133,13 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
         if (field === 'schoolName') {
           const selectedSchool = schools.find((school) => school.name === value);
           updatedChild.schoolLevel = selectedSchool ? selectedSchool.level : '';
-          updatedChild.grade = ''; // Reset grade when school changes
+          updatedChild.grade = '';
         }
         return updatedChild;
       });
       return { ...prev, children: updatedChildren };
     });
-    setError(null);
+    setError('');
   };
 
   const updateChildrenCount = (count: number) => {
@@ -167,7 +162,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
         return getTranslation('incompleteChildData', language);
       }
     }
-    return null;
+    return '';
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -189,7 +184,6 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div className="relative w-full max-w-md mx-4 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
-        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center space-x-3 rtl:space-x-reverse">
             <img
@@ -212,19 +206,21 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
           </button>
         </div>
 
-        {/* Error Message */}
         {error && (
           <div className="mx-6 mt-4 p-3 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400 rounded-lg text-sm">
             {error}
           </div>
         )}
 
-        {/* Auth Mode Toggle */}
         <div className="p-6 pb-0">
           <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
             <button
               onClick={() => setAuthMode('signin')}
-              className="flex `flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${authMode === 'signin' ? 'bg-white dark:bg-gray-700 text-[#39789b] shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`"
+              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${
+                authMode === 'signin'
+                  ? 'bg-white dark:bg-gray-700 text-[#39789b] shadow-sm'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+              }`}
             >
               {getTranslation('signIn', language)}
             </button>
@@ -241,9 +237,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
           </div>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {/* Role Selection (Sign Up Only) */}
           {authMode === 'signup' && (
             <div>
               <label className={`block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>
@@ -274,7 +268,6 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
             </div>
           )}
 
-          {/* Common Fields */}
           {authMode === 'signup' && (
             <>
               <div>
@@ -409,7 +402,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
               </div>
 
               <div>
-                <label className={`block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}}">
                   {getTranslation('confirmPassword', language)}
                 </label>
                 <div className="relative">
@@ -433,7 +426,6 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
             </>
           )}
 
-          {/* School Admin Specific Fields */}
           {authMode === 'signup' && selectedRole === 'schoolAdmin' && (
             <>
               <div>
@@ -466,7 +458,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
               </div>
 
               <div>
-                <label className={`block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}}">
                   {getTranslation('schoolLevel', language)}
                 </label>
                 <select
@@ -483,11 +475,10 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
             </>
           )}
 
-          {/* Parent Specific Fields */}
           {authMode === 'signup' && selectedRole === 'parent' && (
             <>
               <div>
-                <label className={`block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}}">
                   {getTranslation('numberOfChildren', language)}
                 </label>
                 <select
@@ -530,13 +521,13 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                       type="date"
                       value={child.dateOfBirth}
                       onChange={(e) => handleChildChange(index, 'dateOfBirth', e.target.value)}
-                      className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#39789b] focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${isRTL ? 'text-right' : 'text-left'}`}
+                      className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#39789b] focus:border-transparent bg-white dark:bg-gray-800.hk text-gray-900 dark:text-white ${isRTL ? 'text-right' : 'text-left'}`}
                       required
                     />
                   </div>
 
                   <div>
-                    <label className={`block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}}">
                       {getTranslation('selectSchool', language)}
                     </label>
                     <select
@@ -579,7 +570,6 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
             </>
           )}
 
-          {/* Sign-In Fields */}
           {authMode === 'signin' && (
             <>
               <div>
@@ -639,15 +629,13 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
             </>
           )}
 
-          {/* Submit Button */}
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-[#39789b] hover:bg-[#2d5f7d] text-white rounded-lg font-semibold transition-all duration-200 shadow-sm focus:ring-2 focus:ring-[#39789b] focus:ring-offset-2"
+            className="w-full py-2 px-4 bg-[#39789b] hover:bg-[#2d5f7d] text-white rounded-lg font-medium transition-all duration-200 shadow-sm focus:ring-2 focus:ring-[#39789b] focus:ring-offset-2"
           >
             {authMode === 'signin' ? getTranslation('signIn', language) : getTranslation('signUp', language)}
           </button>
 
-          {/* Switch Mode */}
           <div className="text-center text-sm">
             <span className="text-gray-600 dark:text-gray-400">
               {authMode === 'signin'
@@ -658,7 +646,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
               type="button"
               onClick={() => {
                 setAuthMode(authMode === 'signin' ? 'signup' : 'signin');
-                setError(null);
+                setError('');
               }}
               className="ml-1 text-[#39789b] hover:text-[#2d5f7d] dark:hover:text-[#4b8ab0] font-medium transition-colors"
             >
