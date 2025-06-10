@@ -178,7 +178,7 @@ export function Footer() {
                'Subscribe to our Newsletter'}
             </h4>
             <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
-              {language === 'ar' ? 'احصل على آخر الأخبار والتحديثات حول منصة بيداكونيكت' : 
+              {language === 'ar' ? 'احصل على آخر الأخبار والتحديثات حول منصة PedaConnect' : 
                language === 'fr' ? 'Recevez les dernières nouvelles et mises à jour sur PedaConnect' : 
                'Get the latest news and updates about PedaConnect platform'}
             </p>
@@ -201,7 +201,7 @@ export function Footer() {
         <div className="py-6 border-t border-gray-800">
           <div className={`flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 ${isRTL ? 'text-right' : 'text-left'}`}>
             <p className="text-gray-400 text-sm">
-              © {currentYear} بيداكونيكت. {getTranslation('allRightsReserved', language)}
+              © {currentYear} PedaConnect. {getTranslation('allRightsReserved', language)}
             </p>
             <div className="flex items-center space-x-6 rtl:space-x-reverse">
               <span className="text-gray-400 text-sm">
