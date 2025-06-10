@@ -21,9 +21,9 @@ function App() {
     
     // Update page title
     const titles = {
-      ar: 'بيداكونيكت - منصة إدارة المدارس الشاملة',
-      en: 'PedaConnect - Comprehensive School Management Platform',
-      fr: 'PedaConnect - Plateforme de Gestion Scolaire Complète'
+      ar: 'PedaConnect - تعليم متابع نجاح مؤكد',
+      en: 'PedaConnect - Follow-up education, guaranteed success',
+      fr: 'PedaConnect - Formation continue, succès garanti'
     };
     document.title = titles[language];
   }, [language, isRTL]);

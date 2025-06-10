@@ -59,7 +59,7 @@ export function Footer() {
                 <GraduationCap className="w-7 h-7 text-white" />
               </div>
               <div>
-                <h3 className="text-2xl font-bold text-white">بيداكونيكت</h3>
+                <h3 className="text-2xl font-bold text-white">PedaConnect</h3>
                 <p className="text-sm text-gray-300">تعليم متابع نجاح مؤكد</p>
               </div>
             </div>
