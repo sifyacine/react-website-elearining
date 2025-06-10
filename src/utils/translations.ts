@@ -287,6 +287,146 @@ export const translations: Translations = {
     en: 'Remember Me',
     fr: 'Se souvenir de moi'
   },
+  dataLoadError: {
+    ar: 'فشل تحميل البيانات',
+    en: 'Failed to load data',
+    fr: 'Échec du chargement des données'
+  },
+  grade1: {
+    ar: 'السنة الأولى ابتدائي',
+    en: '1st Grade Primary',
+    fr: '1ère Année Primaire'
+  },
+  grade2: {
+    ar: 'السنة الثانية ابتدائي',
+    en: '2nd Grade Primary',
+    fr: '2ème Année Primaire'
+  },
+  grade3: {
+    ar: 'السنة الثالثة ابتدائي',
+    en: '3rd Grade Primary',
+    fr: '3ème Année Primaire'
+  },
+  grade4: {
+    ar: 'السنة الرابعة ابتدائي',
+    en: '4th Grade Primary',
+    fr: '4ème Année Primaire'
+  },
+  grade5: {
+    ar: 'السنة الخامسة ابتدائي',
+    en: '5th Grade Primary',
+    fr: '5ème Année Primaire'
+  },
+  middle1: {
+    ar: 'السنة الأولى متوسط',
+    en: '1st Year Middle',
+    fr: '1ère Année Collège'
+  },
+  middle2: {
+    ar: 'السنة الثانية متوسط',
+    en: '2nd Year Middle',
+    fr: '2ème Année Collège'
+  },
+  middle3: {
+    ar: 'السنة الثالثة متوسط',
+    en: '3rd Year Middle',
+    fr: '3ème Année Collège'
+  },
+  middle4: {
+    ar: 'السنة الرابعة متوسط',
+    en: '4th Year Middle',
+    fr: '4ème Année Collège'
+  },
+  high1: {
+    ar: 'السنة الأولى ثانوي',
+    en: '1st Year High',
+    fr: '1ère Année Lycée'
+  },
+  high2: {
+    ar: 'السنة الثانية ثانوي',
+    en: '2nd Year High',
+    fr: '2ème Année Lycée'
+  },
+  high3: {
+    ar: 'السنة الثالثة ثانوي',
+    en: '3rd Year High',
+    fr: '3ème Année Lycée'
+  },
+  passwordMismatch: {
+    ar: 'كلمات المرور غير متطابقة',
+    en: 'Passwords do not match',
+    fr: 'Les mots de passe ne correspondent pas'
+  },
+  invalidPhone: {
+    ar: 'رقم الهاتف غير صالح',
+    en: 'Invalid phone number',
+    fr: 'Numéro de téléphone invalide'
+  },
+  incompleteChildData: {
+    ar: 'بيانات الطفل غير مكتملة',
+    en: 'Incomplete child data',
+    fr: 'Données de l\'enfant incomplètes'
+  },
+  username: {
+    ar: 'اسم المستخدم',
+    en: 'Username',
+    fr: 'Nom d\'utilisateur'
+  },
+  wilaya: {
+    ar: 'الولاية',
+    en: 'Wilaya',
+    fr: 'Wilaya'
+  },
+  selectWilaya: {
+    ar: 'اختر الولاية',
+    en: 'Select Wilaya',
+    fr: 'Sélectionner la Wilaya'
+  },
+  commune: {
+    ar: 'البلدية',
+    en: 'Commune',
+    fr: 'Commune'
+  },
+  selectCommune: {
+    ar: 'اختر البلدية',
+    en: 'Select Commune',
+    fr: 'Sélectionner la Commune'
+  },
+  childFullName: {
+    ar: 'الاسم الكامل للطفل',
+    en: 'Child\'s Full Name',
+    fr: 'Nom Complet de l\'Enfant'
+  },
+  dateOfBirth: {
+    ar: 'تاريخ الميلاد',
+    en: 'Date of Birth',
+    fr: 'Date de Naissance'
+  },
+  selectGrade: {
+    ar: 'اختر الصف',
+    en: 'Select Grade',
+    fr: 'Sélectionner le Niveau'
+  },
+  schoolLevel: {
+    ar: 'المستوى الدراسي',
+    en: 'School Level',
+    fr: 'Niveau Scolaire'
+  },
+  primarySchool: {
+    ar: 'المدرسة الابتدائية',
+    en: 'Primary School',
+    fr: 'École Primaire'
+  },
+  middleSchool: {
+    ar: 'المدرسة المتوسطة',
+    en: 'Middle School',
+    fr: 'Collège'
+  },
+  highSchool: {
+    ar: 'المدرسة الثانوية',
+    en: 'High School',
+    fr: 'Lycée'
+  },
 
   // Footer
   footerDescription: {

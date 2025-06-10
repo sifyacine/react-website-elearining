@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowRight, ArrowLeft, Play, BookOpen, Users, Trophy } from 'lucide-react';
+
 import { useLanguage } from '../hooks/useLanguage';
 import { getTranslation } from '../utils/translations';
 

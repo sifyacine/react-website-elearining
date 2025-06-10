@@ -6,6 +6,7 @@ import { Services } from './components/Services';
 import { Pricing } from './components/Pricing';
 import { Contact } from './components/Contact';
 import { Footer } from './components/Footer';
+import { AuthModal } from './components/Auth/AuthModal';
 import { useLanguage } from './hooks/useLanguage';
 import { useTheme } from './hooks/useTheme';
 
@@ -13,6 +14,7 @@ function App() {
   const { language, isRTL } = useLanguage();
   const { isDark } = useTheme();
   const [activeSection, setActiveSection] = useState('home');
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   // Set document direction and language
   useEffect(() => {
@@ -22,8 +24,8 @@ function App() {
     // Update page title
     const titles = {
       ar: 'PedaConnect - تعليم متابع نجاح مؤكد',
-      en: 'PedaConnect - Follow-up education, guaranteed success',
-      fr: 'PedaConnect - Formation continue, succès garanti'
+      en: 'PedaConnect - Continuous Education, Assured Success',
+      fr: 'PedaConnect - Éducation Continue, Succès Assuré'
     };
     document.title = titles[language];
   }, [language, isRTL]);
@@ -50,17 +52,30 @@ function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const handleGetStarted = () => {
+    setIsAuthModalOpen(true);
+  };
+
   return (
     <div className={`min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300 ${isRTL ? 'font-arabic' : ''}`}>
-      <Header activeSection={activeSection} setActiveSection={setActiveSection} />
+      <Header 
+        activeSection={activeSection} 
+        setActiveSection={setActiveSection}
+        onGetStarted={handleGetStarted}
+      />
       <main>
-        <Hero />
+        <Hero onGetStarted={handleGetStarted} />
         <About />
         <Services />
         <Pricing />
         <Contact />
       </main>
       <Footer />
+      
+      <AuthModal 
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+      />
     </div>
   );
 }

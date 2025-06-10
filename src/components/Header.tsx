@@ -47,7 +47,7 @@ export function Header({ activeSection, setActiveSection, onGetStarted }: Header
           <div className="flex items-center space-x-3 rtl:space-x-reverse">
             <div className="w-12 h-12 flex items-center justify-center">
               <img 
-                src="assets/logo.png" 
+                src="assets/logo.jpg" 
                 alt="PedaConnect Logo" 
                 className="w-12 h-12 object-contain"
               />
