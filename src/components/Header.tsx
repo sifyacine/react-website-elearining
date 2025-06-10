@@ -1,5 +1,5 @@
 import React from 'react';
-import { Moon, Sun, Globe, Menu, X, GraduationCap } from 'lucide-react';
+import { Moon, Sun, Globe, Menu, X } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
 import { useLanguage } from '../hooks/useLanguage';
 import { getTranslation } from '../utils/translations';
@@ -45,8 +45,12 @@ export function Header({ activeSection, setActiveSection, onGetStarted }: Header
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center space-x-3 rtl:space-x-reverse">
-            <div className="w-10 h-10 bg-gradient-to-br from-[#39789b] to-[#bcc6d2] rounded-lg flex items-center justify-center">
-              <GraduationCap className="w-6 h-6 text-white" />
+            <div className="w-12 h-12 flex items-center justify-center">
+              <img 
+                src="assets/logo.jpg" 
+                alt="PedaConnect Logo" 
+                className="w-12 h-12 object-contain"
+              />
             </div>
             <div>
               <h1 className="text-xl font-bold text-[#39789b] dark:text-blue-300">PedaConnect</h1>

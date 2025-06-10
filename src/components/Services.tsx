@@ -155,7 +155,7 @@ export function Services() {
               {language === 'ar' ? 'جاهز للبدء؟' : language === 'fr' ? 'Prêt à Commencer?' : 'Ready to Get Started?'}
             </h3>
             <p className="text-blue-100 text-lg mb-8 max-w-2xl mx-auto">
-              {language === 'ar' ? 'انضم إلى آلاف المدارس وأولياء الأمور الذين يثقون في بيداكونيكت' : 
+              {language === 'ar' ? 'انضم إلى آلاف المدارس وأولياء الأمور الذين يثقون في PedaConnect' : 
                language === 'fr' ? 'Rejoignez des milliers d\'écoles et de parents qui font confiance à PedaConnect' :
                'Join thousands of schools and parents who trust PedaConnect'}
             </p>

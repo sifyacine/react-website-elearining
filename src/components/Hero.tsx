@@ -33,7 +33,7 @@ export function Hero() {
               {/* Main Title */}
               <h1 className={`text-4xl md:text-5xl lg:text-6xl font-bold leading-tight ${isRTL ? 'text-right' : 'text-left'}`}>
                 <span className="text-gray-900 dark:text-white">
-                  {language === 'ar' ? 'بيداكونيكت' : 'PedaConnect'}
+                  {language === 'ar' ? 'PedaConnect' : 'PedaConnect'}
                 </span>
                 <br />
                 <span className="text-[#39789b] dark:text-blue-300">
