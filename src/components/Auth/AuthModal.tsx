@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { X, Eye, EyeOff, Users, School } from 'lucide-react';
+import { X, Eye, EyeOff, Users, School, GraduationCap } from 'lucide-react';
 import { useLanguage } from '../../hooks/useLanguage';
 import { getTranslation } from '../../utils/translations';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSignInSuccess: (role: 'parent' | 'teacher' | 'schoolAdmin') => void;
 }
 
 type AuthMode = 'signin' | 'signup';
-type UserRole = 'parent' | 'schoolAdmin';
+type UserRole = 'parent' | 'teacher' | 'schoolAdmin';
 
 interface Child {
   fullName: string;
@@ -32,7 +33,14 @@ interface School {
   commune_name: string;
 }
 
-export function AuthModal({ isOpen, onClose }: AuthModalProps) {
+// Mock user data for demonstration
+const mockUsers = {
+  'parent@example.com': { role: 'parent' as UserRole, password: 'password123' },
+  'teacher@example.com': { role: 'teacher' as UserRole, password: 'password123' },
+  'admin@example.com': { role: 'schoolAdmin' as UserRole, password: 'password123' },
+};
+
+export function AuthModal({ isOpen, onClose, onSignInSuccess }: AuthModalProps) {
   const { language, isRTL } = useLanguage();
   const [authMode, setAuthMode] = useState<AuthMode>('signin');
   const [selectedRole, setSelectedRole] = useState<UserRole>('parent');
@@ -44,6 +52,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const [selectedWilaya, setSelectedWilaya] = useState('');
   const [selectedCommune, setSelectedCommune] = useState('');
   const [error, setError] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     username: '',
@@ -63,7 +72,6 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Load wilayas and communes
         const wilayaResponse = await fetch('/assets/states_and_communes.json');
         if (!wilayaResponse.ok) throw new Error('Failed to load wilayas');
         const wilayaData: { wilaya_name: string; commune_name: string }[] = await wilayaResponse.json();
@@ -78,14 +86,13 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
           .sort((a, b) => a.name.localeCompare(b.name));
         setWilayas(wilayaArray);
 
-        // Load schools
         const schoolResponse = await fetch('/assets/mock_data.json');
         if (!schoolResponse.ok) throw new Error('Failed to load schools');
         const schoolData: { schools: School[] } = await schoolResponse.json();
         setSchools(schoolData.schools.sort((a, b) => a.name.localeCompare(b.name)));
       } catch (err) {
         console.error('Error loading data:', err);
-        setError(getTranslation('dataLoadError', language));
+        setError(getTranslation('dataLoadError', language) || 'Failed to load data');
         setWilayas([]);
         setSchools([]);
       }
@@ -97,22 +104,22 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const grades = useMemo(
     () => ({
       primary: [
-        { value: '1', label: getTranslation('grade1', language) },
-        { value: '2', label: getTranslation('grade2', language) },
-        { value: '3', label: getTranslation('grade3', language) },
-        { value: '4', label: getTranslation('grade4', language) },
-        { value: '5', label: getTranslation('grade5', language) },
+        { value: '1', label: getTranslation('grade1', language) || 'Grade 1' },
+        { value: '2', label: getTranslation('grade2', language) || 'Grade 2' },
+        { value: '3', label: getTranslation('grade3', language) || 'Grade 3' },
+        { value: '4', label: getTranslation('grade4', language) || 'Grade 4' },
+        { value: '5', label: getTranslation('grade5', language) || 'Grade 5' },
       ],
       middle: [
-        { value: '1', label: getTranslation('middle1', language) },
-        { value: '2', label: getTranslation('middle2', language) },
-        { value: '3', label: getTranslation('middle3', language) },
-        { value: '4', label: getTranslation('middle4', language) },
+        { value: '1', label: getTranslation('middle1', language) || 'Middle 1' },
+        { value: '2', label: getTranslation('middle2', language) || 'Middle 2' },
+        { value: '3', label: getTranslation('middle3', language) || 'Middle 3' },
+        { value: '4', label: getTranslation('middle4', language) || 'Middle 4' },
       ],
       high: [
-        { value: '1', label: getTranslation('high1', language) },
-        { value: '2', label: getTranslation('high2', language) },
-        { value: '3', label: getTranslation('high3', language) },
+        { value: '1', label: getTranslation('high1', language) || 'High 1' },
+        { value: '2', label: getTranslation('high2', language) || 'High 2' },
+        { value: '3', label: getTranslation('high3', language) || 'High 3' },
       ],
     }),
     [language]
@@ -153,31 +160,139 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const validateForm = () => {
     if (authMode === 'signup') {
       if (formData.password !== formData.confirmPassword) {
-        return getTranslation('passwordMismatch', language);
+        return getTranslation('passwordMismatch', language) || 'Passwords do not match';
       }
       if (!/^\+213[0-9]{9}$/.test(formData.phoneNumber)) {
-        return getTranslation('invalidPhone', language);
+        return getTranslation('invalidPhone', language) || 'Invalid phone number';
       }
       if (selectedRole === 'parent' && formData.children.some((child) => !child.schoolName || !child.grade)) {
-        return getTranslation('incompleteChildData', language);
+        return getTranslation('incompleteChildData', language) || 'Incomplete child data';
       }
     }
     return '';
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const validationError = validateForm();
-    if (validationError) {
-      setError(validationError);
-      return;
+  const isValidEmail = (email: string): email is keyof typeof mockUsers => {
+    return email in mockUsers;
+  };
+
+  const handleSignIn = async (email: string, password: string): Promise<{ success: boolean; role?: UserRole; error?: string }> => {
+    console.log('Attempting sign-in with:', { email, password });
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    if (!isValidEmail(email)) {
+      console.log('User not found:', email);
+      return { success: false, error: getTranslation('userNotFound', language) || 'User not found' };
     }
-    console.log('Auth submission:', { authMode, selectedRole, formData });
-    onClose();
+    const user = mockUsers[email];
+    if (user.password !== password) {
+      console.log('Invalid password for:', email);
+      return { success: false, error: getTranslation('invalidPassword', language) || 'Invalid password' };
+    }
+    console.log('Sign-in successful for:', email, 'Role:', user.role);
+    return { success: true, role: user.role };
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+    console.log('Form data on submit:', formData);
+
+    try {
+      if (authMode === 'signin') {
+        const result = await handleSignIn(formData.email, formData.password);
+        console.log('Sign-in result:', result);
+        if (result.success && result.role) {
+          try {
+            const userData = {
+              email: formData.email,
+              role: result.role,
+              loginTime: new Date().toISOString(),
+            };
+            if (typeof window !== 'undefined' && window.localStorage) {
+              localStorage.setItem('pedaConnectUser', JSON.stringify(userData));
+              console.log('localStorage set successfully:', userData);
+            } else {
+              console.warn('localStorage is unavailable, skipping save.');
+            }
+          } catch (storageError) {
+            console.error('localStorage error:', storageError);
+          }
+          console.log('About to call onSignInSuccess with role:', result.role);
+          try {
+            onSignInSuccess(result.role);
+            console.log('onSignInSuccess called successfully');
+          } catch (callbackError: any) {
+            console.error('onSignInSuccess error:', callbackError);
+            console.warn('Proceeding with sign-in despite onSignInSuccess error');
+            try {
+              onClose();
+              console.log('onClose called successfully');
+            } catch (closeError: any) {
+              console.error('onClose error:', closeError);
+              setError(`Failed to close modal: ${closeError.message || 'Unknown error'}`);
+              setIsLoading(false);
+              return;
+            }
+          }
+        } else {
+          setError(result.error || (getTranslation('signInFailed', language) || 'Sign in failed'));
+        }
+      } else {
+        const validationError = validateForm();
+        if (validationError) {
+          setError(validationError);
+          setIsLoading(false);
+          return;
+        }
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        try {
+          const userData = {
+            email: formData.email,
+            role: selectedRole,
+            loginTime: new Date().toISOString(),
+          };
+          if (typeof window !== 'undefined' && window.localStorage) {
+            localStorage.setItem('pedaConnectUser', JSON.stringify(userData));
+            console.log('localStorage set successfully:', userData);
+          } else {
+            console.warn('localStorage is unavailable, skipping save.');
+          }
+        } catch (storageError) {
+          console.error('localStorage error:', storageError);
+        }
+        console.log('About to call onSignInSuccess with role:', selectedRole);
+        try {
+          onSignInSuccess(selectedRole);
+          console.log('onSignInSuccess called successfully');
+        } catch (callbackError: any) {
+          console.error('onSignInSuccess error:', callbackError);
+          setError(`Failed to process sign-up: ${callbackError.message || 'Unknown error'}`);
+          setIsLoading(false);
+          return;
+        }
+        console.log('Calling onClose');
+        try {
+          onClose();
+          console.log('onClose called successfully');
+        } catch (closeError: any) {
+          console.error('onClose error:', closeError);
+          setError(`Failed to close modal: ${closeError.message || 'Unknown error'}`);
+          setIsLoading(false);
+          return;
+        }
+      }
+    } catch (error: any) {
+      console.error('Submit error:', error);
+      setError(`An error occurred: ${error.message || 'Unknown error'}`);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const roleIcons = {
     parent: Users,
+    teacher: GraduationCap,
     schoolAdmin: School,
   };
 
@@ -194,7 +309,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
             <div>
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">PedaConnect</h2>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                {getTranslation('heroSlogan', language)}
+                {getTranslation('heroSlogan', language) || 'Connect with Education'}
               </p>
             </div>
           </div>
@@ -212,6 +327,17 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
           </div>
         )}
 
+        {authMode === 'signin' && (
+          <div className="mx-6 mt-4 p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 rounded-lg text-sm">
+            <div className="font-medium mb-2">Demo Credentials:</div>
+            <div className="text-xs space-y-1">
+              <div>Parent: parent@example.com / password123</div>
+              <div>Teacher: teacher@example.com / password123</div>
+              <div>Admin: admin@example.com / password123</div>
+            </div>
+          </div>
+        )}
+
         <div className="p-6 pb-0">
           <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
             <button
@@ -222,7 +348,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
-              {getTranslation('signIn', language)}
+              {getTranslation('signIn', language) || 'Sign In'}
             </button>
             <button
               onClick={() => setAuthMode('signup')}
@@ -232,7 +358,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
-              {getTranslation('signUp', language)}
+              {getTranslation('signUp', language) || 'Sign Up'}
             </button>
           </div>
         </div>
@@ -241,10 +367,10 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
           {authMode === 'signup' && (
             <div>
               <label className={`block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 ${isRTL ? 'text-right' : 'text-left'}`}>
-                {getTranslation('selectRole', language)}
+                {getTranslation('selectRole', language) || 'Select Role'}
               </label>
               <div className="grid grid-cols-1 gap-3">
-                {(['parent', 'schoolAdmin'] as UserRole[]).map((role) => {
+                {(['parent', 'teacher', 'schoolAdmin'] as UserRole[]).map((role) => {
                   const Icon = roleIcons[role];
                   return (
                     <button
@@ -259,7 +385,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                     >
                       <Icon className="w-5 h-5 text-[#39789b]" />
                       <span className="font-medium text-gray-900 dark:text-white">
-                        {getTranslation(role, language)}
+                        {getTranslation(role, language) || role}
                       </span>
                     </button>
                   );
@@ -272,29 +398,29 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
             <>
               <div>
                 <label className={`block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
-                  {getTranslation('username', language)}
+                  {getTranslation('username', language) || 'Username'}
                 </label>
                 <input
                   type="text"
                   value={formData.username}
                   onChange={(e) => handleInputChange('username', e.target.value)}
                   className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#39789b] focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${isRTL ? 'text-right' : 'text-left'}`}
-                  placeholder={getTranslation('username', language)}
+                  placeholder={getTranslation('username', language) || 'Username'}
                   required
                 />
               </div>
 
-              {selectedRole === 'parent' && (
+              {(selectedRole === 'parent' || selectedRole === 'teacher') && (
                 <div>
                   <label className={`block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
-                    {getTranslation('fullName', language)}
+                    {getTranslation('fullName', language) || 'Full Name'}
                   </label>
                   <input
                     type="text"
                     value={formData.fullName}
                     onChange={(e) => handleInputChange('fullName', e.target.value)}
                     className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#39789b] focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${isRTL ? 'text-right' : 'text-left'}`}
-                    placeholder={getTranslation('fullName', language)}
+                    placeholder={getTranslation('fullName', language) || 'Full Name'}
                     required
                   />
                 </div>
@@ -302,21 +428,21 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
               <div>
                 <label className={`block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
-                  {getTranslation('email', language)}
+                  {getTranslation('email', language) || 'Email'}
                 </label>
                 <input
                   type="email"
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
                   className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#39789b] focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${isRTL ? 'text-right' : 'text-left'}`}
-                  placeholder={getTranslation('email', language)}
+                  placeholder={getTranslation('email', language) || 'Email'}
                   required
                 />
               </div>
 
               <div>
                 <label className={`block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
-                  {getTranslation('phoneNumber', language)}
+                  {getTranslation('phoneNumber', language) || 'Phone Number'}
                 </label>
                 <input
                   type="tel"
@@ -330,7 +456,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
               <div>
                 <label className={`block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
-                  {getTranslation('wilaya', language)}
+                  {getTranslation('wilaya', language) || 'Wilaya'}
                 </label>
                 <select
                   value={selectedWilaya}
@@ -343,7 +469,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#39789b] focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${isRTL ? 'text-right' : 'text-left'}`}
                   required
                 >
-                  <option value="">{getTranslation('selectWilaya', language)}</option>
+                  <option value="">{getTranslation('selectWilaya', language) || 'Select Wilaya'}</option>
                   {wilayas.map((wilaya) => (
                     <option key={wilaya.name} value={wilaya.name}>
                       {wilaya.name}
@@ -354,7 +480,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
               <div>
                 <label className={`block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
-                  {getTranslation('commune', language)}
+                  {getTranslation('commune', language) || 'Commune'}
                 </label>
                 <select
                   value={selectedCommune}
@@ -366,7 +492,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   required
                   disabled={!selectedWilaya}
                 >
-                  <option value="">{getTranslation('selectCommune', language)}</option>
+                  <option value="">{getTranslation('selectCommune', language) || 'Select Commune'}</option>
                   {selectedWilaya &&
                     wilayas
                       .find((wilaya) => wilaya.name === selectedWilaya)
@@ -380,7 +506,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
               <div>
                 <label className={`block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
-                  {getTranslation('password', language)}
+                  {getTranslation('password', language) || 'Password'}
                 </label>
                 <div className="relative">
                   <input
@@ -388,7 +514,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                     value={formData.password}
                     onChange={(e) => handleInputChange('password', e.target.value)}
                     className={`w-full px-3 py-2 pr-10 rtl:pr-3 rtl:pl-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#39789b] focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${isRTL ? 'text-right' : 'text-left'}`}
-                    placeholder={getTranslation('password', language)}
+                    placeholder={getTranslation('password', language) || 'Password'}
                     required
                   />
                   <button
@@ -402,8 +528,8 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}}">
-                  {getTranslation('confirmPassword', language)}
+                <label className={`block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+                  {getTranslation('confirmPassword', language) || 'Confirm Password'}
                 </label>
                 <div className="relative">
                   <input
@@ -411,7 +537,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                     value={formData.confirmPassword}
                     onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                     className={`w-full px-3 py-2 pr-10 rtl:pr-3 rtl:pl-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#39789b] focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${isRTL ? 'text-right' : 'text-left'}`}
-                    placeholder={getTranslation('confirmPassword', language)}
+                    placeholder={getTranslation('confirmPassword', language) || 'Confirm Password'}
                     required
                   />
                   <button
@@ -430,21 +556,21 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
             <>
               <div>
                 <label className={`block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
-                  {getTranslation('schoolName', language)}
+                  {getTranslation('schoolName', language) || 'School Name'}
                 </label>
                 <input
                   type="text"
                   value={formData.schoolName}
                   onChange={(e) => handleInputChange('schoolName', e.target.value)}
                   className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#39789b] focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${isRTL ? 'text-right' : 'text-left'}`}
-                  placeholder={getTranslation('schoolName', language)}
+                  placeholder={getTranslation('schoolName', language) || 'School Name'}
                   required
                 />
               </div>
 
               <div>
                 <label className={`block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
-                  {getTranslation('schoolType', language)}
+                  {getTranslation('schoolType', language) || 'School Type'}
                 </label>
                 <select
                   value={formData.schoolType}
@@ -452,14 +578,14 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#39789b] focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${isRTL ? 'text-right' : 'text-left'}`}
                   required
                 >
-                  <option value="public">{getTranslation('publicSchool', language)}</option>
-                  <option value="private">{getTranslation('privateSchool', language)}</option>
+                  <option value="public">{getTranslation('publicSchool', language) || 'Public'}</option>
+                  <option value="private">{getTranslation('privateSchool', language) || 'Private'}</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}}">
-                  {getTranslation('schoolLevel', language)}
+                <label className={`block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+                  {getTranslation('schoolLevel', language) || 'School Level'}
                 </label>
                 <select
                   value={formData.schoolLevel}
@@ -467,9 +593,9 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#39789b] focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${isRTL ? 'text-right' : 'text-left'}`}
                   required
                 >
-                  <option value="primary">{getTranslation('primarySchool', language)}</option>
-                  <option value="middle">{getTranslation('middleSchool', language)}</option>
-                  <option value="high">{getTranslation('highSchool', language)}</option>
+                  <option value="primary">{getTranslation('primarySchool', language) || 'Primary'}</option>
+                  <option value="middle">{getTranslation('middleSchool', language) || 'Middle'}</option>
+                  <option value="high">{getTranslation('highSchool', language) || 'High'}</option>
                 </select>
               </div>
             </>
@@ -478,8 +604,8 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
           {authMode === 'signup' && selectedRole === 'parent' && (
             <>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}}">
-                  {getTranslation('numberOfChildren', language)}
+                <label className={`block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+                  {getTranslation('numberOfChildren', language) || 'Number of Children'}
                 </label>
                 <select
                   value={numberOfChildren}
@@ -501,70 +627,77 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
                   <div>
                     <label className={`block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
-                      {getTranslation('childFullName', language)}
+                      {getTranslation('childFullName', language) || 'Child Full Name'}
                     </label>
                     <input
                       type="text"
                       value={child.fullName}
                       onChange={(e) => handleChildChange(index, 'fullName', e.target.value)}
                       className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#39789b] focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${isRTL ? 'text-right' : 'text-left'}`}
-                      placeholder={getTranslation('childFullName', language)}
+                      placeholder={getTranslation('childFullName', language) || 'Child Full Name'}
                       required
                     />
                   </div>
 
                   <div>
                     <label className={`block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
-                      {getTranslation('dateOfBirth', language)}
+                      {getTranslation('dateOfBirth', language) || 'Date of Birth'}
                     </label>
                     <input
                       type="date"
                       value={child.dateOfBirth}
                       onChange={(e) => handleChildChange(index, 'dateOfBirth', e.target.value)}
-                      className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#39789b] focus:border-transparent bg-white dark:bg-gray-800.hk text-gray-900 dark:text-white ${isRTL ? 'text-right' : 'text-left'}`}
+                      className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#39789b] focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${isRTL ? 'text-right' : 'text-left'}`}
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}}">
-                      {getTranslation('selectSchool', language)}
+                    <label className={`block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+                      {getTranslation('schoolName', language) || 'School Name'}
                     </label>
                     <select
                       value={child.schoolName}
                       onChange={(e) => handleChildChange(index, 'schoolName', e.target.value)}
-                      className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#39789b] bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${isRTL ? 'text-right' : 'text-left'}`}
+                      className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#39789b] focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${isRTL ? 'text-right' : 'text-left'}`}
                       required
                     >
-                      <option value="">{getTranslation('selectSchool', language)}</option>
-                      {schools.map((school) => (
-                        <option key={school.name} value={school.name}>
-                          {getTranslation(school.name.replace(/\s+/g, ''), language) || school.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className={`block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
-                      {getTranslation('childGrade', language)}
-                    </label>
-                    <select
-                      value={child.grade}
-                      onChange={(e) => handleChildChange(index, 'grade', e.target.value)}
-                      className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#39789b] bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${isRTL ? 'text-right' : 'text-left'}`}
-                      required
-                      disabled={!child.schoolLevel}
-                    >
-                      <option value="">{getTranslation('selectGrade', language)}</option>
-                      {child.schoolLevel &&
-                        grades[child.schoolLevel as keyof typeof grades]?.map((grade) => (
-                          <option key={grade.value} value={grade.value}>
-                            {grade.label}
+                      <option value="">{getTranslation('selectSchool', language) || 'Select School'}</option>
+                      {schools
+                        .filter(
+                          (school) =>
+                            (!selectedWilaya || school.wilaya_name === selectedWilaya) &&
+                            (!selectedCommune || school.commune_name === selectedCommune)
+                        )
+                        .map((school) => (
+                          <option key={school.name} value={school.name}>
+                            {school.name}
                           </option>
                         ))}
                     </select>
                   </div>
+
+                  {child.schoolName && (
+                    <div>
+                      <label className={`block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+                        {getTranslation('grade', language) || 'Grade'}
+                      </label>
+                      <select
+                        value={child.grade}
+                        onChange={(e) => handleChildChange(index, 'grade', e.target.value)}
+                        className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#39789b] focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${isRTL ? 'text-right' : 'text-left'}`}
+                        required
+                      >
+                        <option value="">{getTranslation('selectGrade', language) || 'Select Grade'}</option>
+                        {child.schoolLevel &&
+                          grades[child.schoolLevel as keyof typeof grades]?.map((grade) => (
+                            <option key={grade.value} value={grade.value}>
+                              {grade.label}
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+                  )}
                 </div>
               ))}
             </>
@@ -574,21 +707,21 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
             <>
               <div>
                 <label className={`block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
-                  {getTranslation('email', language)}
+                  {getTranslation('email', language) || 'Email'}
                 </label>
                 <input
                   type="email"
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
                   className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#39789b] focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${isRTL ? 'text-right' : 'text-left'}`}
-                  placeholder={getTranslation('email', language)}
+                  placeholder={getTranslation('email', language) || 'Email'}
                   required
                 />
               </div>
 
               <div>
                 <label className={`block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
-                  {getTranslation('password', language)}
+                  {getTranslation('password', language) || 'Password'}
                 </label>
                 <div className="relative">
                   <input
@@ -596,7 +729,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                     value={formData.password}
                     onChange={(e) => handleInputChange('password', e.target.value)}
                     className={`w-full px-3 py-2 pr-10 rtl:pr-3 rtl:pl-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#39789b] focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${isRTL ? 'text-right' : 'text-left'}`}
-                    placeholder={getTranslation('password', language)}
+                    placeholder={getTranslation('password', language) || 'Password'}
                     required
                   />
                   <button
@@ -608,55 +741,22 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   </button>
                 </div>
               </div>
-
-              <div className="flex items-center justify-between text-xs">
-                <label className="flex items-center space-x-2 rtl:space-x-reverse">
-                  <input
-                    type="checkbox"
-                    className="w-4 h-4 text-[#39789b] border-gray-300 rounded focus:ring-2 focus:ring-[#39789b]"
-                  />
-                  <span className="text-gray-600 dark:text-gray-400">
-                    {getTranslation('rememberMe', language)}
-                  </span>
-                </label>
-                <button
-                  type="button"
-                  className="text-[#39789b] hover:text-[#2d5f7d] dark:hover:text-[#4b8ab0] transition-colors"
-                >
-                  {getTranslation('forgotPassword', language)}
-                </button>
-              </div>
             </>
           )}
 
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-[#39789b] hover:bg-[#2d5f7d] text-white rounded-lg font-medium transition-all duration-200 shadow-sm focus:ring-2 focus:ring-[#39789b] focus:ring-offset-2"
+            disabled={isLoading}
+            className={`w-full py-3 px-4 bg-[#39789b] text-white rounded-lg hover:bg-[#2f6a85] transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed ${isRTL ? 'text-right' : 'text-left'}`}
           >
-            {authMode === 'signin' ? getTranslation('signIn', language) : getTranslation('signUp', language)}
+            {isLoading
+              ? getTranslation('loading', language) || 'Loading...'
+              : authMode === 'signin'
+              ? getTranslation('signIn', language) || 'Sign In'
+              : getTranslation('signUp', language) || 'Sign Up'}
           </button>
-
-          <div className="text-center text-sm">
-            <span className="text-gray-600 dark:text-gray-400">
-              {authMode === 'signin'
-                ? getTranslation('dontHaveAccount', language)
-                : getTranslation('alreadyHaveAccount', language)}
-            </span>
-            <button
-              type="button"
-              onClick={() => {
-                setAuthMode(authMode === 'signin' ? 'signup' : 'signin');
-                setError('');
-              }}
-              className="ml-1 text-[#39789b] hover:text-[#2d5f7d] dark:hover:text-[#4b8ab0] font-medium transition-colors"
-            >
-              {authMode === 'signin' ? getTranslation('signUp', language) : getTranslation('signIn', language)}
-            </button>
-          </div>
         </form>
       </div>
     </div>
   );
 }
-
-export default AuthModal;

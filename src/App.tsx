@@ -1,82 +1,61 @@
-import React, { useState, useEffect } from 'react';
-import { Header } from './components/Header';
-import { Hero } from './components/Hero';
-import { About } from './components/About';
-import { Services } from './components/Services';
-import { Pricing } from './components/Pricing';
-import { Contact } from './components/Contact';
-import { Footer } from './components/Footer';
-import { AuthModal } from './components/Auth/AuthModal';
-import { useLanguage } from './hooks/useLanguage';
-import { useTheme } from './hooks/useTheme';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import { LanguageProvider } from './contexts/LanguageContext';
+import { ThemeProvider } from './contexts/ThemeContext';
+import { NotificationProvider } from './contexts/NotificationContext';
+import Landing from './pages/Landing';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import SchoolDashboard from './pages/dashboards/SchoolDashboard';
+import TeacherDashboard from './pages/dashboards/TeacherDashboard';
+import ParentDashboard from './pages/dashboards/ParentDashboard';
+import ProtectedRoute from './components/ProtectedRoute';
+import './index.css';
 
 function App() {
-  const { language, isRTL } = useLanguage();
-  const { isDark } = useTheme();
-  const [activeSection, setActiveSection] = useState('home');
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-
-  // Set document direction and language
-  useEffect(() => {
-    document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
-    document.documentElement.lang = language;
-    
-    // Update page title
-    const titles = {
-      ar: 'PedaConnect - تعليم متابع نجاح مؤكد',
-      en: 'PedaConnect - Continuous Education, Assured Success',
-      fr: 'PedaConnect - Éducation Continue, Succès Assuré'
-    };
-    document.title = titles[language];
-  }, [language, isRTL]);
-
-  // Handle scroll to update active section
-  useEffect(() => {
-    const handleScroll = () => {
-      const sections = ['home', 'about', 'services', 'pricing', 'contact'];
-      const scrollPosition = window.scrollY + 100;
-
-      for (const section of sections) {
-        const element = document.getElementById(section);
-        if (element) {
-          const { offsetTop, offsetHeight } = element;
-          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
-            setActiveSection(section);
-            break;
-          }
-        }
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const handleGetStarted = () => {
-    setIsAuthModalOpen(true);
-  };
-
   return (
-    <div className={`min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300 ${isRTL ? 'font-arabic' : ''}`}>
-      <Header 
-        activeSection={activeSection} 
-        setActiveSection={setActiveSection}
-        onGetStarted={handleGetStarted}
-      />
-      <main>
-        <Hero onGetStarted={handleGetStarted} />
-        <About />
-        <Services />
-        <Pricing />
-        <Contact />
-      </main>
-      <Footer />
-      
-      <AuthModal 
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-      />
-    </div>
+    <ThemeProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <NotificationProvider>
+            <Router>
+              <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+                <Routes>
+                  <Route path="/" element={<Landing />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route
+                    path="/school-dashboard"
+                    element={
+                      <ProtectedRoute allowedRoles={['school']}>
+                        <SchoolDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/teacher-dashboard"
+                    element={
+                      <ProtectedRoute allowedRoles={['teacher']}>
+                        <TeacherDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/parent-dashboard"
+                    element={
+                      <ProtectedRoute allowedRoles={['parent']}>
+                        <ParentDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                </Routes>
+              </div>
+            </Router>
+          </NotificationProvider>
+        </AuthProvider>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Moon, Sun, Globe, Menu, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../hooks/useTheme';
 import { useLanguage } from '../hooks/useLanguage';
 import { getTranslation } from '../utils/translations';
@@ -7,14 +8,14 @@ import { getTranslation } from '../utils/translations';
 interface HeaderProps {
   activeSection: string;
   setActiveSection: (section: string) => void;
-  onGetStarted: () => void;
 }
 
-export function Header({ activeSection, setActiveSection, onGetStarted }: HeaderProps) {
+export function Header({ activeSection, setActiveSection }: HeaderProps) {
   const { isDark, toggleTheme } = useTheme();
   const { language, changeLanguage } = useLanguage();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = React.useState(false);
+  const navigate = useNavigate();
 
   const navigationItems = [
     { id: 'home', label: getTranslation('home', language) },
@@ -121,13 +122,13 @@ export function Header({ activeSection, setActiveSection, onGetStarted }: Header
             {/* Auth Buttons */}
             <div className="flex items-center space-x-3 rtl:space-x-reverse">
               <button 
-                onClick={onGetStarted}
+                onClick={() => navigate('/login')}
                 className="px-4 py-2 text-sm font-medium text-[#39789b] hover:text-[#2d5f7d] transition-colors"
               >
                 {getTranslation('login', language)}
               </button>
               <button 
-                onClick={onGetStarted}
+                onClick={() => navigate('/register')}
                 className="px-6 py-2 bg-[#39789b] hover:bg-[#2d5f7d] text-white rounded-lg text-sm font-medium transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 {getTranslation('register', language)}
@@ -176,13 +177,13 @@ export function Header({ activeSection, setActiveSection, onGetStarted }: Header
               
               <div className="space-y-2">
                 <button 
-                  onClick={onGetStarted}
+                  onClick={() => navigate('/login')}
                   className="block w-full px-4 py-3 text-center font-medium text-[#39789b] hover:bg-[#edeff3] dark:hover:bg-gray-700 rounded-lg transition-colors"
                 >
                   {getTranslation('login', language)}
                 </button>
                 <button 
-                  onClick={onGetStarted}
+                  onClick={() => navigate('/register')}
                   className="block w-full px-4 py-3 bg-[#39789b] hover:bg-[#2d5f7d] text-white text-center font-medium rounded-lg transition-colors"
                 >
                   {getTranslation('register', language)}
