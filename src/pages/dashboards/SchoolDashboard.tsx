@@ -1,44 +1,48 @@
 import React, { useState } from 'react';
-import { Users, GraduationCap, MessageCircle, Bell, FileText, TrendingUp, Calendar, UserCheck } from 'lucide-react';
+import { Home, Users, Layers, Calendar, FileText, BarChart2, Star } from 'lucide-react';
 import DashboardLayout from '../../components/DashboardLayout';
 import StudentManagement from '../../components/school/StudentManagement';
+import ScheduleManagement from '../../components/school/ScheduleManagement';
+
 import TeacherManagement from '../../components/school/TeacherManagement';
-import AnnouncementManager from '../../components/school/AnnouncementManager';
+import ActivitiesManagement from '../../components/school/ActivitiesManagement';
+import BehaviorReports from '../../components/school/BehaviorReports';
+import ExamScheduleManagemen from '../../components/school/ExamScheduleManagemen';
 import AbsenceReviews from '../../components/school/AbsenceReviews';
 import GradeOverview from '../../components/school/GradeOverview';
+import ClassesManagement from '../../components/school/ClassesManagement';
+
+const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (
+  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{title}</h3>
+    <p className="text-gray-600 dark:text-gray-400">هذه الصفحة قيد التطوير.</p>
+  </div>
+);
 
 const SchoolDashboard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('home');
 
   const stats = [
     { title: 'إجمالي الطلاب', value: '485', icon: Users, color: 'bg-blue-500' },
-    { title: 'المعلمون', value: '24', icon: GraduationCap, color: 'bg-green-500' },
+    { title: 'المعلمون', value: '24', icon: Users, color: 'bg-green-500' },
     { title: 'الفصول', value: '18', icon: FileText, color: 'bg-purple-500' },
-    { title: 'الحضور اليومي', value: '94%', icon: UserCheck, color: 'bg-orange-500' }
+    { title: 'الحضور اليومي', value: '94%', icon: BarChart2, color: 'bg-orange-500' }
   ];
 
   const tabs = [
-    { id: 'overview', label: 'نظرة عامة', icon: TrendingUp },
-    { id: 'students', label: 'الطلاب', icon: Users },
-    { id: 'teachers', label: 'المعلمون', icon: GraduationCap },
-    { id: 'announcements', label: 'الإعلانات', icon: Bell },
-    { id: 'absences', label: 'مراجعة الغياب', icon: Calendar },
-    { id: 'grades', label: 'الدرجات', icon: FileText }
+    { id: 'home', label: 'الرئيسية', icon: Home },
+    { id: 'users', label: 'إدارة المستخدمين', icon: Users },
+    { id: 'levels', label: 'إدارة الصفوف', icon: Layers },
+    { id: 'schedules', label: 'جداول توقيت', icon: Calendar },
+    { id: 'exams', label: 'رزنامة الامتحانات', icon: FileText },
+    { id: 'reports', label: 'تقارير', icon: BarChart2 },
+    { id: 'grades', label: 'المعدل الفصلي', icon: FileText },
+    { id: 'activities', label: 'فعاليات', icon: Star }
   ];
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'students':
-        return <StudentManagement />;
-      case 'teachers':
-        return <TeacherManagement />;
-      case 'announcements':
-        return <AnnouncementManager />;
-      case 'absences':
-        return <AbsenceReviews />;
-      case 'grades':
-        return <GradeOverview />;
-      default:
+      case 'home':
         return (
           <div className="space-y-6">
             {/* Stats Grid */}
@@ -103,6 +107,33 @@ const SchoolDashboard: React.FC = () => {
             </div>
           </div>
         );
+      case 'users':
+        return (
+          <div className="space-y-6">
+            <StudentManagement />
+            <TeacherManagement />
+            <PlaceholderPage title="إدارة أولياء الأمور" />
+          </div>
+        );
+      case 'levels':
+        return <ClassesManagement />;
+      case 'schedules':
+        return <ScheduleManagement />;
+      case 'exams':
+        return <ExamScheduleManagemen />;
+      case 'reports':
+        return (
+          <div className="space-y-6">
+            <AbsenceReviews />
+            <BehaviorReports />
+          </div>
+        );
+      case 'grades':
+        return <GradeOverview />;
+      case 'activities':
+        return <ActivitiesManagement />;
+      default:
+        return <PlaceholderPage title="صفحة غير موجودة" />;
     }
   };
 

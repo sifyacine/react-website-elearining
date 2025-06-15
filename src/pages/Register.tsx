@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { X, Eye, EyeOff, Users, School } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -36,6 +36,7 @@ const Register: React.FC<RegisterProps> = ({ isOpen = true, onClose }) => {
     confirmPassword: '',
     role: 'parent',
     schoolType: 'public',
+    schoolLevel: 'primary', // New field for school level
     phone: '',
     wilaya: '',
     commune: '',
@@ -50,9 +51,9 @@ const Register: React.FC<RegisterProps> = ({ isOpen = true, onClose }) => {
   const [selectedWilaya, setSelectedWilaya] = useState('');
   const [selectedCommune, setSelectedCommune] = useState('');
   const [error, setError] = useState<string>('');
+  const [success, setSuccess] = useState<string>('');
   const { register } = useAuth();
   const { t, language, isRTL } = useLanguage();
-  const navigate = useNavigate();
 
   useEffect(() => {
     const loadData = async () => {
@@ -116,6 +117,7 @@ const Register: React.FC<RegisterProps> = ({ isOpen = true, onClose }) => {
       [e.target.name]: e.target.value
     });
     setError('');
+    setSuccess('');
   };
 
   const handleChildChange = (index: number, field: string, value: string) => {
@@ -132,6 +134,7 @@ const Register: React.FC<RegisterProps> = ({ isOpen = true, onClose }) => {
       return { ...prev, children: updatedChildren };
     });
     setError('');
+    setSuccess('');
   };
 
   const updateChildrenCount = (count: number) => {
@@ -158,6 +161,7 @@ const Register: React.FC<RegisterProps> = ({ isOpen = true, onClose }) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+    setSuccess('');
 
     try {
       const validationError = validateForm();
@@ -168,8 +172,24 @@ const Register: React.FC<RegisterProps> = ({ isOpen = true, onClose }) => {
       }
       const success = await register({ ...formData, role: formData.role === 'school' ? 'schoolAdmin' : formData.role });
       if (success) {
-        navigate(`/${formData.role === 'school' ? 'schoolAdmin' : formData.role}-dashboard`);
-        onClose?.();
+        setSuccess(t('registrationSuccess') || 'Successfully signed up!');
+        // Reset form after success
+        setFormData({
+          name: '',
+          email: '',
+          password: '',
+          confirmPassword: '',
+          role: 'parent',
+          schoolType: 'public',
+          schoolLevel: 'primary',
+          phone: '',
+          wilaya: '',
+          commune: '',
+          numberOfChildren: 1,
+          children: [{ fullName: '', dateOfBirth: '', schoolName: '', grade: '' }],
+        });
+        setSelectedWilaya('');
+        setSelectedCommune('');
       }
     } catch (error) {
       console.error('Registration failed:', error);
@@ -218,6 +238,12 @@ const Register: React.FC<RegisterProps> = ({ isOpen = true, onClose }) => {
         {error && (
           <div className="mx-6 mt-4 p-3 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400 rounded-lg text-sm">
             {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="mx-6 mt-4 p-3 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 rounded-lg text-sm">
+            {success}
           </div>
         )}
 
@@ -368,9 +394,28 @@ const Register: React.FC<RegisterProps> = ({ isOpen = true, onClose }) => {
                 className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#39789b] focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${isRTL ? 'text-right' : 'text-left'}`}
                 required
               >
-                Facet: 1
                 <option value="public">{t('publicSchool') || 'Public'}</option>
                 <option value="private">{t('privateSchool') || 'Private'}</option>
+              </select>
+            </div>
+          )}
+
+          {/* School Level (only for schools) */}
+          {formData.role === 'school' && (
+            <div>
+              <label className={`block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+                {t('schoolLevel') || 'School Level'}
+              </label>
+              <select
+                name="schoolLevel"
+                value={formData.schoolLevel}
+                onChange={handleInputChange}
+                className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#39789b] focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${isRTL ? 'text-right' : 'text-left'}`}
+                required
+              >
+                <option value="primary">{t('primarySchool') || 'Primary School'}</option>
+                <option value="middle">{t('middleSchool') || 'Middle School'}</option>
+                <option value="high">{t('highSchool') || 'High School'}</option>
               </select>
             </div>
           )}
