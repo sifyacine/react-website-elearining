@@ -10,6 +10,7 @@ import Register from './pages/Register';
 import SchoolDashboard from './pages/dashboards/SchoolDashboard';
 import TeacherDashboard from './pages/dashboards/TeacherDashboard';
 import ParentDashboard from './pages/dashboards/ParentDashboard';
+import ConfirmationCode from './pages/ConfirmationPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import './index.css';
 
@@ -25,6 +26,8 @@ function App() {
                   <Route path="/" element={<Landing />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
+                  <Route path="/confirmation-code" element={<ConfirmationCode />} />
+
                   <Route
                     path="/school-dashboard"
                     element={

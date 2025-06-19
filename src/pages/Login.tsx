@@ -174,6 +174,14 @@ const Login: React.FC<LoginProps> = ({ isOpen = true, onClose }) => {
               {t('signUp') || 'Sign Up'}
             </Link>
           </div>
+          <div className={`text-center text-sm text-gray-600 dark:text-gray-400 ${isRTL ? 'text-right' : 'text-left'}`}>
+                      <Link
+                        to="/"
+                        className="text-[#39789b] hover:underline"
+                      >
+                        {t('cancel') || 'Go Back'}
+                      </Link>
+          </div>
 
           {/* Demo Credentials */}
           <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">

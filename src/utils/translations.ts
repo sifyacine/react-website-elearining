@@ -678,6 +678,86 @@ export const translations: Translations = {
     ar: 'جميع الحقوق محفوظة',
     en: 'All rights reserved',
     fr: 'Tous droits réservés'
+  },
+  incompleteCode: {
+    ar: 'يرجى إدخال الرمز المكون من 6 أرقام كاملاً',
+    en: 'Please enter the complete 6-digit code',
+    fr: 'Veuillez entrer le code complet à 6 chiffres'
+  },
+  emailConfirmed: {
+    ar: 'تم تأكيد البريد الإلكتروني بنجاح!',
+    en: 'Email confirmed successfully!',
+    fr: 'Email confirmé avec succès !'
+  },
+  invalidCode: {
+    ar: 'رمز غير صحيح أو منتهي الصلاحية. يرجى المحاولة مرة أخرى.',
+    en: 'Invalid or expired code. Please try again.',
+    fr: 'Code invalide ou expiré. Veuillez réessayer.'
+  },
+  codeResent: {
+    ar: 'تم إرسال رمز تأكيد جديد إلى بريدك الإلكتروني',
+    en: 'A new confirmation code has been sent to your email',
+    fr: 'Un nouveau code de confirmation a été envoyé à votre email'
+  },
+  resendFailed: {
+    ar: 'فشل إرسال الرمز. يرجى المحاولة مرة أخرى.',
+    en: 'Failed to resend code. Please try again.',
+    fr: 'Échec de l\'envoi du code. Veuillez réessayer.'
+  },
+  confirmEmail: {
+    ar: 'تأكيد البريد الإلكتروني',
+    en: 'Confirm Email',
+    fr: 'Confirmer l\'email'
+  },
+  confirmEmailSlogan: {
+    ar: 'تحقق من حسابك',
+    en: 'Verify your account',
+    fr: 'Vérifiez votre compte'
+  },
+  checkYourEmail: {
+    ar: 'تحقق من بريدك الإلكتروني',
+    en: 'Check your email',
+    fr: 'Vérifiez votre boîte de réception'
+  },
+  confirmationCodeSent: {
+    ar: 'لقد أرسلنا رمز تأكيد مكون من 6 أرقام إلى',
+    en: 'We have sent a 6-digit confirmation code to',
+    fr: 'Nous avons envoyé un code de confirmation à 6 chiffres à'
+  },
+  enterConfirmationCode: {
+    ar: 'أدخل رمز التأكيد',
+    en: 'Enter confirmation code',
+    fr: 'Entrez le code de confirmation'
+  },
+  resendCodeIn: {
+    ar: 'إعادة إرسال الرمز خلال',
+    en: 'Resend code in',
+    fr: 'Renvoyer le code dans'
+  },
+  resending: {
+    ar: 'جاري الإرسال...',
+    en: 'Resending...',
+    fr: 'Envoi en cours...'
+  },
+  resendCode: {
+    ar: 'إعادة إرسال الرمز',
+    en: 'Resend code',
+    fr: 'Renvoyer le code'
+  },
+  verifying: {
+    ar: 'جاري التحقق...',
+    en: 'Verifying...',
+    fr: 'Vérification en cours...'
+  },
+  verifyCode: {
+    ar: 'تأكيد الرمز',
+    en: 'Verify code',
+    fr: 'Vérifier le code'
+  },
+  wrongEmail: {
+    ar: 'بريد إلكتروني خاطئ؟',
+    en: 'Wrong email?',
+    fr: 'Mauvais email ?'
   }
 };
 

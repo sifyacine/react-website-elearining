@@ -1,10 +1,13 @@
 import React from 'react';
-import { ArrowRight, ArrowLeft, Play, BookOpen, Users, Trophy } from 'lucide-react';
-
+import { ArrowRight, ArrowLeft, Play, BookOpen, Users, Trophy, BarChart3, GraduationCap } from 'lucide-react';
 import { useLanguage } from '../hooks/useLanguage';
 import { getTranslation } from '../utils/translations';
 
-export function Hero() {
+interface HeroProps {
+  onGetStarted: () => void;
+}
+
+export function Hero({ onGetStarted }: HeroProps) {
   const { language, isRTL } = useLanguage();
   const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
 
@@ -34,15 +37,11 @@ export function Hero() {
               {/* Main Title */}
               <h1 className={`text-4xl md:text-5xl lg:text-6xl font-bold leading-tight ${isRTL ? 'text-right' : 'text-left'}`}>
                 <span className="text-gray-900 dark:text-white">
-                  {language === 'ar' ? 'PedaConnect' : 'PedaConnect'}
+                  PedaConnect
                 </span>
                 <br />
                 <span className="text-[#39789b] dark:text-blue-300">
-                  {language === 'ar' ? 'منصة إدارة المدارس' : 'School Management'}
-                </span>
-                <br />
-                <span className="text-gray-700 dark:text-gray-300 text-3xl md:text-4xl lg:text-5xl">
-                  {language === 'ar' ? 'الشاملة' : 'Platform'}
+                  {getTranslation('heroSlogan', language)}
                 </span>
               </h1>
 
@@ -54,7 +53,10 @@ export function Hero() {
 
             {/* CTA Buttons */}
             <div className={`flex flex-col sm:flex-row gap-4 ${isRTL ? 'sm:justify-end' : 'sm:justify-start'}`}>
-              <button className="group flex items-center justify-center px-8 py-4 bg-[#39789b] hover:bg-[#2d5f7d] text-white rounded-xl text-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+              <button 
+                onClick={onGetStarted}
+                className="group flex items-center justify-center px-8 py-4 bg-[#39789b] hover:bg-[#2d5f7d] text-white rounded-xl text-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              >
                 <span className="mr-2 rtl:mr-0 rtl:ml-2">{getTranslation('getStarted', language)}</span>
                 <ArrowIcon className="w-5 h-5 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform" />
               </button>
@@ -88,50 +90,123 @@ export function Hero() {
             </div>
           </div>
 
-          {/* Visual */}
+          {/* Dashboard Mockup Visual */}
           <div className={`${isRTL ? 'lg:order-1' : 'lg:order-2'} relative`}>
             <div className="relative">
-              {/* Main Illustration */}
-              <div className="relative bg-gradient-to-br from-[#39789b] to-[#2d5f7d] rounded-3xl p-8 shadow-2xl">
-                <div className="grid grid-cols-2 gap-4">
-                  {/* Dashboard Cards */}
-                  <div className="bg-white/90 rounded-xl p-4 shadow-lg">
-                    <BookOpen className="w-8 h-8 text-[#39789b] mb-2" />
-                    <div className="h-2 bg-[#edeff3] rounded mb-2"></div>
-                    <div className="h-2 bg-[#bcc6d2] rounded w-3/4"></div>
-                  </div>
-                  
-                  <div className="bg-white/90 rounded-xl p-4 shadow-lg">
-                    <Users className="w-8 h-8 text-[#39789b] mb-2" />
-                    <div className="h-2 bg-[#edeff3] rounded mb-2"></div>
-                    <div className="h-2 bg-[#bcc6d2] rounded w-2/3"></div>
-                  </div>
-                  
-                  <div className="bg-white/90 rounded-xl p-4 shadow-lg col-span-2">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="w-6 h-6 bg-[#39789b] rounded-full"></div>
-                      <div className="flex space-x-1 rtl:space-x-reverse">
-                        <div className="w-2 h-2 bg-[#bcc6d2] rounded-full"></div>
-                        <div className="w-2 h-2 bg-[#bcc6d2] rounded-full"></div>
-                        <div className="w-2 h-2 bg-[#39789b] rounded-full"></div>
-                      </div>
+              {/* Main Dashboard Interface */}
+              <div className="relative bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-2xl border border-gray-200 dark:border-gray-700">
+                {/* Dashboard Header */}
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center space-x-3 rtl:space-x-reverse">
+                    <div className="w-10 h-10 bg-[#39789b] rounded-lg flex items-center justify-center">
+                      <GraduationCap className="w-6 h-6 text-white" />
                     </div>
-                    <div className="space-y-2">
-                      <div className="h-2 bg-[#edeff3] rounded"></div>
-                      <div className="h-2 bg-[#bcc6d2] rounded w-4/5"></div>
-                      <div className="h-2 bg-[#edeff3] rounded w-3/5"></div>
+                    <div>
+                      <h3 className="font-bold text-gray-900 dark:text-white">
+                        {language === 'ar' ? 'لوحة التحكم' : language === 'fr' ? 'Tableau de Bord' : 'Dashboard'}
+                      </h3>
+                      <p className="text-sm text-gray-500">
+                        {language === 'ar' ? 'متابعة الأداء الأكاديمي' : language === 'fr' ? 'Suivi Performance' : 'Academic Tracking'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex space-x-2 rtl:space-x-reverse">
+                    <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+                    <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                    <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                  </div>
+                </div>
+
+                {/* Grade Cards */}
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 p-4 rounded-xl border border-green-200 dark:border-green-700">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-green-700 dark:text-green-300">
+                        {language === 'ar' ? 'الرياضيات' : language === 'fr' ? 'Mathématiques' : 'Mathematics'}
+                      </span>
+                      <BarChart3 className="w-4 h-4 text-green-600" />
+                    </div>
+                    <div className="text-2xl font-bold text-green-800 dark:text-green-200">18/20</div>
+                    <div className="w-full bg-green-200 dark:bg-green-700 rounded-full h-2 mt-2">
+                      <div className="bg-green-500 h-2 rounded-full" style={{ width: '90%' }}></div>
+                    </div>
+                  </div>
+
+                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 p-4 rounded-xl border border-blue-200 dark:border-blue-700">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                        {language === 'ar' ? 'العلوم' : language === 'fr' ? 'Sciences' : 'Sciences'}
+                      </span>
+                      <BookOpen className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <div className="text-2xl font-bold text-blue-800 dark:text-blue-200">16/20</div>
+                    <div className="w-full bg-blue-200 dark:bg-blue-700 rounded-full h-2 mt-2">
+                      <div className="bg-blue-500 h-2 rounded-full" style={{ width: '80%' }}></div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Attendance & Communication */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div className="flex items-center space-x-3 rtl:space-x-reverse">
+                      <Users className="w-5 h-5 text-[#39789b]" />
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {language === 'ar' ? 'الحضور اليوم' : language === 'fr' ? 'Présence Aujourd\'hui' : 'Today\'s Attendance'}
+                      </span>
+                    </div>
+                    <span className="text-sm font-bold text-green-600">
+                      {language === 'ar' ? 'حاضر' : language === 'fr' ? 'Présent' : 'Present'}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div className="flex items-center space-x-3 rtl:space-x-reverse">
+                      <Trophy className="w-5 h-5 text-[#39789b]" />
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {language === 'ar' ? 'المعدل العام' : language === 'fr' ? 'Moyenne Générale' : 'Overall Average'}
+                      </span>
+                    </div>
+                    <span className="text-sm font-bold text-[#39789b]">17.2/20</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Floating Achievement Cards */}
+              <div className="absolute -top-4 -right-4 rtl:-right-auto rtl:-left-4 w-20 h-20 bg-white dark:bg-gray-800 rounded-2xl shadow-xl flex items-center justify-center transform rotate-12 hover:rotate-0 transition-transform duration-300 border border-gray-200 dark:border-gray-700">
+                <div className="text-center">
+                  <Trophy className="w-8 h-8 text-yellow-500 mx-auto mb-1" />
+                  <span className="text-xs font-bold text-gray-700 dark:text-gray-300">A+</span>
+                </div>
+              </div>
+              
+              <div className="absolute -bottom-4 -left-4 rtl:-left-auto rtl:-right-4 w-20 h-20 bg-white dark:bg-gray-800 rounded-2xl shadow-xl flex items-center justify-center transform -rotate-12 hover:rotate-0 transition-transform duration-300 border border-gray-200 dark:border-gray-700">
+                <div className="text-center">
+                  <BarChart3 className="w-8 h-8 text-green-500 mx-auto mb-1" />
+                  <span className="text-xs font-bold text-gray-700 dark:text-gray-300">98%</span>
+                </div>
+              </div>
+
+              {/* Progress Indicator */}
+              <div className="absolute top-1/2 -left-8 rtl:-left-auto rtl:-right-8 transform -translate-y-1/2 bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-xl border border-gray-200 dark:border-gray-700">
+                <div className="flex items-center space-x-3 rtl:space-x-reverse">
+                  <div className="w-12 h-12 bg-gradient-to-br from-[#39789b] to-[#2d5f7d] rounded-full flex items-center justify-center">
+                    <span className="text-white font-bold text-sm">95%</span>
+                  </div>
+                  <div>
+                    <div className="text-sm font-bold text-gray-900 dark:text-white">
+                      {language === 'ar' ? 'التقدم' : language === 'fr' ? 'Progrès' : 'Progress'}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {language === 'ar' ? 'هذا الشهر' : language === 'fr' ? 'Ce mois' : 'This month'}
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Floating Elements */}
-              <div className="absolute -top-4 -right-4 w-16 h-16 bg-white dark:bg-gray-800 rounded-2xl shadow-xl flex items-center justify-center transform rotate-12 hover:rotate-0 transition-transform duration-300">
-                <Trophy className="w-8 h-8 text-[#39789b]" />
-              </div>
-              
-              <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-white dark:bg-gray-800 rounded-2xl shadow-xl flex items-center justify-center transform -rotate-12 hover:rotate-0 transition-transform duration-300">
-                <BookOpen className="w-8 h-8 text-[#39789b]" />
+              {/* Success Notification */}
+              <div className="absolute top-8 right-8 rtl:right-auto rtl:left-8 bg-green-500 text-white px-3 py-2 rounded-lg shadow-lg text-sm font-medium animate-pulse">
+                {language === 'ar' ? 'نجاح مؤكد!' : language === 'fr' ? 'Succès Assuré!' : 'Success Assured!'}
               </div>
             </div>
           </div>

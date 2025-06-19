@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { X, Eye, EyeOff, Users, School } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -29,6 +29,8 @@ interface RegisterProps {
 }
 
 const Register: React.FC<RegisterProps> = ({ isOpen = true, onClose }) => {
+  const navigate = useNavigate();
+  
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -173,6 +175,8 @@ const Register: React.FC<RegisterProps> = ({ isOpen = true, onClose }) => {
       const success = await register({ ...formData, role: formData.role === 'school' ? 'schoolAdmin' : formData.role });
       if (success) {
         setSuccess(t('registrationSuccess') || 'Successfully signed up!');
+        navigate('/confirmation-code');
+
         // Reset form after success
         setFormData({
           name: '',
@@ -593,6 +597,14 @@ const Register: React.FC<RegisterProps> = ({ isOpen = true, onClose }) => {
               className="text-[#39789b] hover:underline"
             >
               {t('signIn') || 'Sign In'}
+            </Link>
+          </div>
+          <div className={`text-center text-sm text-gray-600 dark:text-gray-400 ${isRTL ? 'text-right' : 'text-left'}`}>
+            <Link
+              to="/"
+              className="text-[#39789b] hover:underline"
+            >
+              {t('cancel') || 'Go Back'}
             </Link>
           </div>
         </form>
