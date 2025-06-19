@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
-import { User, GraduationCap, MessageCircle, FileText, Calendar, TrendingUp, AlertTriangle, Clock } from 'lucide-react';
+import { User, GraduationCap, MessageCircle, FileText, Calendar, TrendingUp, AlertTriangle, Clock, BookOpen, Star, LayoutGrid } from 'lucide-react';
 import DashboardLayout from '../../components/DashboardLayout';
 import ChildrenOverview from '../../components/parent/ChildrenOverview';
 import GradeReports from '../../components/parent/GradeReports';
 import AbsenceManager from '../../components/parent/AbsenceManager';
+import ScheduleManagement from '../../components/parent/ScheduleManagement';
+import ActivitiesView from '../../components/parent/ActivitiesManagement';
+import ParentScheduleTable from  '../../components/parent/HomeworksManagement.tsx'
+import ResourceLibrary from '../../components/parent/ResourceLibrary';
 import ParentChat from '../../components/shared/ParentChat';
 import SchoolAnnouncements from '../../components/parent/SchoolAnnouncements';
 
@@ -20,10 +24,14 @@ const ParentDashboard: React.FC = () => {
   const tabs = [
     { id: 'overview', label: 'نظرة عامة', icon: TrendingUp },
     { id: 'children', label: 'أطفالي', icon: User },
-    { id: 'grades', label: 'الدرجات', icon: FileText },
-    { id: 'absences', label: 'الغياب', icon: Calendar },
-    { id: 'chat', label: 'التواصل', icon: MessageCircle },
-    { id: 'announcements', label: 'الإعلانات', icon: GraduationCap }
+    { id: 'grades', label: 'المعدل', icon: FileText },
+    { id: 'absences', label: 'تقارير وغيابات', icon: Calendar },
+    { id: 'chat', label: 'دردشة', icon: MessageCircle },
+    { id: 'announcements', label: 'إشعارات وتنبيهات', icon: AlertTriangle },
+    { id: 'timetable', label: 'جدول التوقيت', icon: LayoutGrid },
+    { id: 'homework', label: 'الواجبات', icon: BookOpen },
+    { id: 'calendar', label: 'مكتبة رقمية', icon: Calendar },
+    { id: 'events', label: 'فعاليات', icon: Star }
   ];
 
   const renderContent = () => {
@@ -38,6 +46,15 @@ const ParentDashboard: React.FC = () => {
         return <ParentChat userType="parent" />;
       case 'announcements':
         return <SchoolAnnouncements />;
+      case 'timetable':
+        return <ScheduleManagement />;
+
+      case 'homework':
+        return <ParentScheduleTable />;
+      case 'calendar':
+        return <ResourceLibrary />
+      case 'events':
+        return <ActivitiesView />; 
       default:
         return (
           <div className="space-y-6">

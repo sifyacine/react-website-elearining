@@ -38,7 +38,7 @@ export const translations: Translations = {
     fr: 'S\'inscrire'
   },
 
-  // Hero Section - Fixed slogan
+  // Hero Section
   heroSlogan: {
     ar: 'تعليم متابع نجاح مؤكد',
     en: 'Continuous Education, Assured Success',
@@ -232,6 +232,21 @@ export const translations: Translations = {
     en: 'School Name',
     fr: 'Nom de l\'École'
   },
+  schoolNamePlaceholder: {
+    ar: 'مثل: مدرسة الأمل الابتدائية',
+    en: 'e.g., Al Amal Primary School',
+    fr: 'ex. : École Primaire Al Amal'
+  },
+  fullNamePlaceholder: {
+    ar: 'مثل: محمد علي',
+    en: 'e.g., Mohammed Ali',
+    fr: 'ex. : Mohammed Ali'
+  },
+  emailPlaceholder: {
+    ar: 'مثل: example@email.dz',
+    en: 'e.g., example@email.dz',
+    fr: 'ex. : example@email.dz'
+  },
   schoolType: {
     ar: 'نوع المدرسة',
     en: 'School Type',
@@ -252,20 +267,25 @@ export const translations: Translations = {
     en: 'Number of Children',
     fr: 'Nombre d\'Enfants'
   },
-  childName: {
-    ar: 'اسم الطفل',
-    en: 'Child Name',
-    fr: 'Nom de l\'Enfant'
+  childFullName: {
+    ar: 'الاسم الكامل للطفل',
+    en: 'Child\'s Full Name',
+    fr: 'Nom Complet de l\'Enfant'
   },
-  childGrade: {
-    ar: 'الصف الدراسي',
-    en: 'Grade Level',
-    fr: 'Niveau Scolaire'
+  dateOfBirth: {
+    ar: 'تاريخ الميلاد',
+    en: 'Date of Birth',
+    fr: 'Date de Naissance'
   },
   selectSchool: {
     ar: 'اختر المدرسة',
     en: 'Select School',
     fr: 'Sélectionner l\'École'
+  },
+  selectGrade: {
+    ar: 'اختر الصف',
+    en: 'Select Grade',
+    fr: 'Sélectionner le Niveau'
   },
   alreadyHaveAccount: {
     ar: 'لديك حساب بالفعل؟',
@@ -392,21 +412,6 @@ export const translations: Translations = {
     en: 'Select Commune',
     fr: 'Sélectionner la Commune'
   },
-  childFullName: {
-    ar: 'الاسم الكامل للطفل',
-    en: 'Child\'s Full Name',
-    fr: 'Nom Complet de l\'Enfant'
-  },
-  dateOfBirth: {
-    ar: 'تاريخ الميلاد',
-    en: 'Date of Birth',
-    fr: 'Date de Naissance'
-  },
-  selectGrade: {
-    ar: 'اختر الصف',
-    en: 'Select Grade',
-    fr: 'Sélectionner le Niveau'
-  },
   schoolLevel: {
     ar: 'المستوى الدراسي',
     en: 'School Level',
@@ -426,6 +431,226 @@ export const translations: Translations = {
     ar: 'المدرسة الثانوية',
     en: 'High School',
     fr: 'Lycée'
+  },
+  registrationSuccess: {
+    ar: 'تم التسجيل بنجاح!',
+    en: 'Successfully signed up!',
+    fr: 'Inscription réussie !'
+  },
+  registrationFailed: {
+    ar: 'فشل التسجيل',
+    en: 'Registration failed',
+    fr: 'Échec de l\'inscription'
+  },
+  loading: {
+    ar: 'جار التحميل...',
+    en: 'Loading...',
+    fr: 'Chargement...'
+  },
+
+  // School Dashboard
+  dashboard: {
+    ar: 'لوحة التحكم',
+    en: 'Dashboard',
+    fr: 'Tableau de Bord'
+  },
+  welcome: {
+    ar: 'مرحباً بك',
+    en: 'Welcome',
+    fr: 'Bienvenue'
+  },
+  totalStudents: {
+    ar: 'إجمالي الطلاب',
+    en: 'Total Students',
+    fr: 'Total des Élèves'
+  },
+  teachers: {
+    ar: 'المعلمون',
+    en: 'Teachers',
+    fr: 'Enseignants'
+  },
+  classCount: {
+    ar: 'الفصول',
+    en: 'Classes',
+    fr: 'Classes'
+  },
+  attendance: {
+    ar: 'الحضور اليومي',
+    en: 'Daily Attendance',
+    fr: 'Présence Quotidienne'
+  },
+  recentActivity: {
+    ar: 'الأنشطة الأخيرة',
+    en: 'Recent Activity',
+    fr: 'Activité Récente'
+  },
+  monthlyStats: {
+    ar: 'الإحصائيات الشهرية',
+    en: 'Monthly Statistics',
+    fr: 'Statistiques Mensuelles'
+  },
+  newStudents: {
+    ar: 'طلاب جدد',
+    en: 'New Students',
+    fr: 'Nouveaux Élèves'
+  },
+  attendanceRate: {
+    ar: 'معدل الحضور',
+    en: 'Attendance Rate',
+    fr: 'Taux de Présence'
+  },
+  announcements: {
+    ar: 'الإعلانات المنشورة',
+    en: 'Announcements Posted',
+    fr: 'Annonces Publiées'
+  },
+  absenceRequests: {
+    ar: 'طلبات الغياب المراجعة',
+    en: 'Absence Requests Reviewed',
+    fr: 'Demandes d\'Absence Examinées'
+  },
+  users: {
+    ar: 'إدارة المستخدمين',
+    en: 'User Management',
+    fr: 'Gestion des Utilisateurs'
+  },
+  levels: {
+    ar: 'إدارة الصفوف',
+    en: 'Class Management',
+    fr: 'Gestion des Classes'
+  },
+  schedules: {
+    ar: 'جداول توقيت',
+    en: 'Schedules',
+    fr: 'Horaires'
+  },
+  exams: {
+    ar: 'رزنامة الامتحانات',
+    en: 'Exam Schedule',
+    fr: 'Calendrier des Examens'
+  },
+  reports: {
+    ar: 'تقارير',
+    en: 'Reports',
+    fr: 'Rapports'
+  },
+  grades: {
+    ar: 'المعدل الفصلي',
+    en: 'Semester Grades',
+    fr: 'Notes Semestrielles'
+  },
+  activities: {
+    ar: 'فعاليات',
+    en: 'Activities',
+    fr: 'Activités'
+  },
+  behaviorReports: {
+    ar: 'تقارير السلوك',
+    en: 'Behavior Reports',
+    fr: 'Rapports de Comportement'
+  },
+  underDevelopment: {
+    ar: 'هذه الصفحة قيد التطوير',
+    en: 'This page is under development',
+    fr: 'Cette page est en cours de développement'
+  },
+
+  // Schedule Management
+  scheduleManagement: {
+    ar: 'إدارة الجداول',
+    en: 'Schedule Management',
+    fr: 'Gestion des Horaires'
+  },
+  addSchedule: {
+    ar: 'إضافة جدول',
+    en: 'Add Schedule',
+    fr: 'Ajouter un Horaire'
+  },
+  editSchedule: {
+    ar: 'تعديل الجدول',
+    en: 'Edit Schedule',
+    fr: 'Modifier l\'Horaire'
+  },
+  updateSchedule: {
+    ar: 'تحديث',
+    en: 'Update',
+    fr: 'Mettre à Jour'
+  },
+  deleteSchedule: {
+    ar: 'حذف',
+    en: 'Delete',
+    fr: 'Supprimer'
+  },
+  searchSchedule: {
+    ar: 'البحث عن الفصل أو المعلم أو المادة...',
+    en: 'Search for class, teacher, or subject...',
+    fr: 'Rechercher une classe, un enseignant ou une matière...'
+  },
+  all: {
+    ar: 'الكل',
+    en: 'All',
+    fr: 'Tous'
+  },
+  classesFilter: {
+    ar: 'الفصول',
+    en: 'Classes',
+    fr: 'Classes'
+  },
+  teachersFilter: {
+    ar: 'المعلمون',
+    en: 'Teachers',
+    fr: 'Enseignants'
+  },
+  className: {
+    ar: 'اسم الفصل',
+    en: 'Class Name',
+    fr: 'Nom de la Classe'
+  },
+  uploadStatus: {
+    ar: 'حالة الرفع',
+    en: 'Upload Status',
+    fr: 'Statut du Téléchargement'
+  },
+  uploaded: {
+    ar: 'تم الرفع',
+    en: 'Uploaded',
+    fr: 'Téléchargé'
+  },
+  notUploaded: {
+    ar: 'لم يتم الرفع',
+    en: 'Not Uploaded',
+    fr: 'Non Téléchargé'
+  },
+  uploadDate: {
+    ar: 'تاريخ الرفع',
+    en: 'Upload Date',
+    fr: 'Date de Téléchargement'
+  },
+  actions: {
+    ar: 'الإجراءات',
+    en: 'Actions',
+    fr: 'Actions'
+  },
+  view: {
+    ar: 'عرض',
+    en: 'View',
+    fr: 'Voir'
+  },
+  upload: {
+    ar: 'رفع',
+    en: 'Upload',
+    fr: 'Télécharger'
+  },
+  cancel: {
+    ar: 'إلغاء',
+    en: 'Cancel',
+    fr: 'Annuler'
+  },
+
+  time: {
+    ar: 'الوقت',
+    en: 'Time',
+    fr: 'Heure'
   },
 
   // Footer
@@ -457,5 +682,13 @@ export const translations: Translations = {
 };
 
 export function getTranslation(key: string, language: string): string {
-  return translations[key]?.[language] || translations[key]?.['ar'] || key;
+  const entry = translations[key];
+  
+  // Return key if translation doesn't exist
+  if (!entry) return key;
+  
+  // Try requested language → Arabic → fallback to key
+  return entry[language] 
+    || entry.ar 
+    || key;
 }
