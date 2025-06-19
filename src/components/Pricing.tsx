@@ -29,7 +29,7 @@ export function Pricing() {
     {
       id: 'monthly',
       name: getTranslation('monthly', language),
-      price: '150',
+      price: '200',
       period: language === 'ar' ? 'شهرياً' : language === 'fr' ? 'par mois' : 'per month',
       description: language === 'ar' ? 'للعائلات النشطة' : language === 'fr' ? 'Pour familles actives' : 'For active families',
       features: [
@@ -47,8 +47,8 @@ export function Pricing() {
     {
       id: 'quarterly',
       name: getTranslation('quarterly', language),
-      price: '400',
-      originalPrice: '450',
+      price: '500',
+      originalPrice: '600',
       period: language === 'ar' ? 'كل 3 أشهر' : language === 'fr' ? 'tous les 3 mois' : 'every 3 months',
       description: language === 'ar' ? 'توفير 17% - الأفضل قيمة' : language === 'fr' ? 'Économie 17% - Meilleure valeur' : 'Save 17% - Best value',
       features: [
